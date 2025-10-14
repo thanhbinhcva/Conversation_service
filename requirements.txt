@@ -1,0 +1,23 @@
+# LangChain core
+langchain
+langchain-core
+langchain-community
+
+# Gemini (Google Generative AI)
+google-generativeai
+langchain-google-genai
+
+# Quản lý API keys
+python-dotenv
+
+# Image generation
+genai
+pillow
+
+# Web framework 
+fastapi
+uvicorn
+
+# Utilities 
+pydantic
+pymongo
