@@ -101,7 +101,7 @@ def should_finalize(conversation_history: str, last_user_input: str) -> bool:
 
 
 # --- MAIN CHAT ENDPOINT ---
-@app.post("/api/v1/chat", response_model=ChatResponse)
+@app.post("/api/v1/logo/chat", response_model=ChatResponse)
 def chat_with_bot(req: ChatRequest):
     """
     Endpoint chính: /api/v1/chat
