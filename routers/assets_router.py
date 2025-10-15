@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from database import save_logo_emblem
 from bson import ObjectId
-
+from middleware.auth import verify_admin
 # --- Load biến môi trường ---
 load_dotenv()
 
@@ -103,15 +103,15 @@ class EmblemGroup(BaseModel):
 
 
 # --- Xác thực admin ---
-def verify_admin(authorization: Optional[str] = Header(None)):
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Thiếu header Authorization")
+# def verify_admin(authorization: Optional[str] = Header(None)):
+#     if not authorization:
+#         raise HTTPException(status_code=401, detail="Thiếu header Authorization")
 
-    token = authorization.replace("Bearer", "").strip()
-    if token != ADMIN_TOKEN:
-        raise HTTPException(status_code=403, detail="Không có quyền truy cập")
+#     token = authorization.replace("Bearer", "").strip()
+#     if token != ADMIN_TOKEN:
+#         raise HTTPException(status_code=403, detail="Không có quyền truy cập")
 
-    return True
+#     return True
 
 
 # --- API thêm nhóm biểu tượng ---
@@ -147,7 +147,7 @@ def add_logo_emblem(data: EmblemGroup, auth: bool = Depends(verify_admin)):
         raise HTTPException(status_code=500, detail=f"Lỗi khi thêm emblem: {str(e)}")
 
 @router.put("/logo/emblem/edit")
-def update_logo_emblem(data: EmblemGroup, authorization: str = Header(None)):
+def update_logo_emblem(data: EmblemGroup, auth: bool = Depends(verify_admin)):
     """Cập nhật thông tin nhóm biểu tượng (emblem group)"""
 
     # 1️⃣ Xác thực admin token
@@ -179,7 +179,7 @@ def update_logo_emblem(data: EmblemGroup, authorization: str = Header(None)):
 
 # --- API xóa nhóm biểu tượng ---
 @router.delete("/logo/emblem/delete")
-def delete_logo_emblem(data: EmblemGroup, authorization: str = Header(None)):
+def delete_logo_emblem(data: EmblemGroup, auth: bool = Depends(verify_admin)):
     """Xóa nhóm biểu tượng (emblem group) theo emblemId"""
 
     # 1️⃣ Kiểm tra xác thực admin token

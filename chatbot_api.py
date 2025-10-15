@@ -10,6 +10,8 @@ from typing import Optional
 import math
 import os
 from routers.assets_router import router as assets_router
+from routers.auth_router import router as auth_router
+from middleware.auth import verify_admin
 from main import (
     main_chain, memory, extract_info,
     save_brand_profile, recommend_logo,
@@ -21,6 +23,7 @@ from langchain.chains import LLMChain
 
 app = FastAPI(title="AI Brand Assistant API v1")
 app.include_router(assets_router)
+app.include_router(auth_router)
 # --- ENV ---
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "supersecrettoken")
 
@@ -184,19 +187,19 @@ def auto_finalize(sess_memory):
 
 
 # --- Middleware xác thực quyền admin ---
-def verify_admin(authorization: Optional[str] = Header(None)):
-    """
-    Xác thực quyền admin qua header Authorization.
-    Ví dụ: Authorization: Bearer <token>
-    """
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Thiếu header Authorization")
+# def verify_admin(authorization: Optional[str] = Header(None)):
+#     """
+#     Xác thực quyền admin qua header Authorization.
+#     Ví dụ: Authorization: Bearer <token>
+#     """
+#     if not authorization:
+#         raise HTTPException(status_code=401, detail="Thiếu header Authorization")
 
-    token = authorization.replace("Bearer", "").strip()
-    if token != ADMIN_TOKEN:
-        raise HTTPException(status_code=403, detail="Không có quyền truy cập")
+#     token = authorization.replace("Bearer", "").strip()
+#     if token != ADMIN_TOKEN:
+#         raise HTTPException(status_code=403, detail="Không có quyền truy cập")
 
-    return True
+#     return True
 
 
 # 📊 GET /api/v1/report/branding — Lấy danh sách hồ sơ (Admin)

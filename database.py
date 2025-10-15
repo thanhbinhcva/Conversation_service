@@ -3,6 +3,7 @@ from bson import ObjectId
 import os
 from dotenv import load_dotenv
 from bson import ObjectId
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 load_dotenv()
 
@@ -15,6 +16,34 @@ db = client[mongo_db_name]
 collection = db["brand_profiles"]
 prompt_collection = db["chatbot_prompts"]
 logo_emblems_collection = db["logo_emblems"]
+collection_users = db["users"]
+
+def create_user(username: str, password: str, role: str = "user"):
+    """Đăng ký người dùng mới"""
+    if collection_users.find_one({"username": username}):
+        return None  # đã tồn tại
+
+    hashed_pw = generate_password_hash(password)
+    user = {
+        "username": username,
+        "password": hashed_pw,
+        "role": role,
+        "created_at": datetime.utcnow()
+    }
+    result = collection_users.insert_one(user)
+    user["_id"] = str(result.inserted_id)
+    return user
+
+def find_user_by_username(username: str):
+    """Tìm user theo username"""
+    user = collection_users.find_one({"username": username})
+    if user:
+        user["_id"] = str(user["_id"])
+    return user
+
+def verify_password(plain_pw: str, hashed_pw: str):
+    """Kiểm tra mật khẩu"""
+    return check_password_hash(hashed_pw, plain_pw)
 
 def save_logo_emblem(data: dict):
     """Lưu nhóm biểu tượng logo vào MongoDB"""
