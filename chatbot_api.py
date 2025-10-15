@@ -358,7 +358,7 @@ def update_prompt(req: PromptUpdateRequest, authorization: Optional[str] = Heade
         "prompt": req.new_prompt
     }
 
-@app.post("/api/v1/chat/logo/promptSettings")
+@app.get("/api/v1/chat/logo/promptReset")
 def reset_prompt(authorization: Optional[str] = Header(None)):
     """Admin reset prompt về mặc định"""
     verify_admin(authorization)
