@@ -9,7 +9,7 @@ from main import main_prompt
 from typing import Optional
 import math
 import os
-
+from routers.assets_router import router as assets_router
 from main import (
     main_chain, memory, extract_info,
     save_brand_profile, recommend_logo,
@@ -20,7 +20,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
 
 app = FastAPI(title="AI Brand Assistant API v1")
-
+app.include_router(assets_router)
 # --- ENV ---
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "supersecrettoken")
 

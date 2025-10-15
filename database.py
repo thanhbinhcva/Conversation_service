@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 import os
 from dotenv import load_dotenv
+from bson import ObjectId
 from datetime import datetime
 load_dotenv()
 
@@ -13,6 +14,53 @@ client = MongoClient(mongo_uri)
 db = client[mongo_db_name]
 collection = db["brand_profiles"]
 prompt_collection = db["chatbot_prompts"]
+logo_emblems_collection = db["logo_emblems"]
+
+def save_logo_emblem(data: dict):
+    """Lưu nhóm biểu tượng logo vào MongoDB"""
+    try:
+        result = logo_emblems_collection.insert_one(data)
+        return str(result.inserted_id)
+    except Exception as e:
+        print(f"❌ Lỗi khi lưu emblem: {e}")
+        return None
+
+def update_logo_emblem_in_db(data):
+    """
+    Cập nhật nhóm biểu tượng (category + variant) trong MongoDB
+    """
+    try:
+        if not ObjectId.is_valid(data.emblemId):
+            print("❌ emblemId không hợp lệ")
+            return False
+
+        result = collection_emblems.update_one(
+            {"_id": ObjectId(data.emblemId)},
+            {"$set": {
+                "category": data.category,
+                "variant": [v.dict() for v in data.variant]
+            }}
+        )
+        return result.modified_count > 0
+    except Exception as e:
+        print(f"❌ Lỗi cập nhật emblem: {e}")
+        return False
+
+def delete_logo_emblem_from_db(emblem_id: str):
+    """
+    Xóa nhóm biểu tượng trong MongoDB theo _id
+    """
+    try:
+        if not ObjectId.is_valid(emblem_id):
+            print("❌ emblemId không hợp lệ")
+            return False
+
+        result = collection_emblems.delete_one({"_id": ObjectId(emblem_id)})
+        return result.deleted_count > 0
+
+    except Exception as e:
+        print(f"❌ Lỗi xóa emblem: {e}")
+        return False
 
 def save_to_mongo(data: dict):
     """Lưu brand_profile vào MongoDB"""

@@ -21,3 +21,5 @@ uvicorn
 # Utilities 
 pydantic
 pymongo
+
+boto3
